@@ -10,25 +10,45 @@ from pyquery import PyQuery
 import numpy as np
 import csv
 
+def clickForMore(driver, timeout):
+    WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.ID, "www_pages_reaction_see_more_unitwww_pages_home")))
+    while True:
+        try:
+            # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btn btn-primary btn-lg']//span[@class='glyphicon glyphicon-play']"))).click()
+            WebDriverWait(driver, timeout).until(EC.element_to_be_clickable((By.ID, "www_pages_reaction_see_more_unitwww_pages_home"))).click()
+            print("LOAD MORE RESULTS button clicked")
+        except TimeoutException:
+            print("No more LOAD MORE RESULTS button to be clicked")
+            break
+
 def scroll(driver, timeout):
     scroll_pause_time = timeout
-
+    count = 0
     # Get scroll height
     last_height = driver.execute_script("return document.body.scrollHeight")
 
     while True:
-        # Scroll down to bottom
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        #if count == 20
+            #scroll_pause_time = scroll_pause_time + 5
+        try:
+            # Scroll down to bottom
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight+30);")
 
-        # Wait to load page
-        sleep(scroll_pause_time)
+            # Wait to load page
+            sleep(scroll_pause_time)
 
-        # Calculate new scroll height and compare with last scroll height
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            # If heights are the same it will exit the function
-            break
-        last_height = new_height
+            # Calculate new scroll height and compare with last scroll height
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                # If heights are the same it will exit the function
+                break
+            last_height = new_height
+            count = count + 1
+        except:
+            print('Re-try.........')
+            #scroll page up to certain limit
+            driver.find_element_by_tag_name("body").send_keys(Keys.UP)
+            sleep(5)
 
 def facebook_scraper(company, driver):
     #open company public page
@@ -36,7 +56,7 @@ def facebook_scraper(company, driver):
     driver.implicitly_wait(30)
     driver.get(fb_page_url)
     #WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "email")))
-    scroll(driver, 30) # scrolls the page 
+    scroll(driver, 10) # scrolls the page 
     #some nasty code here to scrape the posts from company page
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     soup_content = soup.text.strip()
@@ -76,14 +96,14 @@ def facebook_scraper(company, driver):
                     #print(post_images)
                     if len(post_images) > 0:
                         for image in post_images:
-                            pic_src = image.find('img')
+                            pic_src = image.find('img',{"src":True})
                             image_array.append(pic_src['src'])
                         print(image_array)
                     #post_images_text = post_images.text.strip()
-                    post_video = post.find_all('video')
+                    post_video = post.find('video',{"src":True})
                     print(post_video)
-                    if len(post_video) > 0:
-                        video = post_video[0]['src']
+                    if post_video is not None:
+                        video = post_video['src']
                         print(video)
                     else: 
                         video = post_video
@@ -141,8 +161,8 @@ def batchScrapping(Array):
     options.add_argument("--mute-audio")
     driver = webdriver.Chrome('/Users/zilanouyang/downloads/chromedriver',options=options)
     # define linkedin username and password here
-    email = "email here"
-    password = "password here"
+    email = "login email"
+    password = "login password"
     #login 
     driver.get("https://www.facebook.com/")
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "email")))
@@ -163,7 +183,9 @@ def batchScrapping(Array):
 
 #linked_scraper('shell')
 
-Array = [	
-    'ExxonMobil',		
+Array = [				
+    'HondaCanada'	,	
+    'officialsaicmotormg'	,		
+    'ford'
 ]
 batchScrapping(Array)
