@@ -41,7 +41,7 @@ def readingFile(Filename, driver): #Linkedin Data/Linkedin_american-honda-motor-
             print(repliescount)
             """
             # print('here') # > div:nth-child(3)
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#react-root > div > div > div.css-1dbjc4n.r-13qz1uu.r-417010 > main > div > div > div > div.css-1dbjc4n.r-yfoy6g.r-18bvks7.r-1ljd8xs.r-13l2t4g.r-1phboty.r-1jgb5lz.r-1ye8kvj.r-13qz1uu.r-184en5c > div > div > div > section > div > div")))
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#react-root > div > div > div.css-1dbjc4n.r-13qz1uu.r-417010 > main > div > div > div > div.css-1dbjc4n.r-yfoy6g.r-18bvks7.r-1ljd8xs.r-13l2t4g.r-1phboty.r-1jgb5lz.r-1ye8kvj.r-13qz1uu.r-184en5c > div > div > div > section > div > div")))
             source = driver.page_source
             soup = BeautifulSoup(source, 'lxml')
             #print(soup)
@@ -77,10 +77,18 @@ def readingFile(Filename, driver): #Linkedin Data/Linkedin_american-honda-motor-
                 replies = driver.find_element_by_xpath("/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[3]/div/div/div/div/article/div/div[3]/div[5]")
                 if replies is None:
                     replies = driver.find_element_by_xpath("/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[3]/div/div/div/div/article/div/div[3]/div[4]")
-                """
-                replies = WebDriverWait(driver, 0.5).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[5]")) or EC.visibility_of_element_located((By.XPATH, "/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[4]"))).get_attribute("aria-label")
-                print(replies) #css-1dbjc4n r-1oszu61 r-1gkumvb r-1efd50x r-5kkj8d r-18u37iz r-ahm1il r-a2tzq0
-                data.at[index,'Replies']= replies
+                xpath1 = "/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[2]/div/div/div/div/article/div/div[3]/div[5]"
+                xpath2 = "/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[4]"
+                xpath3 = "/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[5]"
+                xpath4 = "/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[4]"
+                xpath5 = "/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[3]/div/div/div/div/article/div/div[3]/div[5]"
+                """ #/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[3]/div/div/div/div/article/div/div[3]/div[5]
+                try:
+                    replies = WebDriverWait(driver, 0.5).until(EC.visibility_of_element_located((By.XPATH, "/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[5]")) or EC.visibility_of_element_located((By.XPATH, "/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[4]"))).get_attribute("aria-label")
+                    print(replies) #css-1dbjc4n r-1oszu61 r-1gkumvb r-1efd50x r-5kkj8d r-18u37iz r-ahm1il r-a2tzq0
+                    data.at[index,'Replies']= replies
+                except TimeoutException:
+                    continue
         except TimeoutException:
             driver.quit()
             options = Options()
@@ -153,3 +161,11 @@ batchRename(Array)
 'KIA Motors'
 'Subaru'
 """
+
+#/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[5]
+#/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[4]
+#/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div/div/section/div/div/div[1]/div/div/div/div/article/div/div[3]/div[5]
+#
+#
+#/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[2]/div/div/div/div/article/div/div[3]/div[5]
+#/html/body/div/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/section/div/div/div[2]/div/div/div/div/article/div/div[3]/div[5]
