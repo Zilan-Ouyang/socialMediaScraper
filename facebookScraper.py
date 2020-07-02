@@ -10,6 +10,7 @@ from pyquery import PyQuery
 import numpy as np
 import csv
 
+#this function is not in use, since facebook uses infinite scroll, sometimes the page takes awhile to load and causes timeout, this function is for imitaing human click 'load more' button for more content
 def clickForMore(driver, timeout):
     WebDriverWait(driver, timeout).until(EC.presence_of_element_located((By.ID, "www_pages_reaction_see_more_unitwww_pages_home")))
     while True:
@@ -20,7 +21,7 @@ def clickForMore(driver, timeout):
         except TimeoutException:
             print("No more LOAD MORE RESULTS button to be clicked")
             break
-
+#since facebook uses infinite scroll, this function is for imitaing human scrolling down the page for more content
 def scroll(driver, timeout):
     scroll_pause_time = timeout
     count = 0
@@ -28,8 +29,6 @@ def scroll(driver, timeout):
     last_height = driver.execute_script("return document.body.scrollHeight")
 
     while True:
-        #if count == 20
-            #scroll_pause_time = scroll_pause_time + 5
         try:
             # Scroll down to bottom
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight+30);")
@@ -55,12 +54,12 @@ def facebook_scraper(company, driver):
     fb_page_url = 'https://www.facebook.com/pg/{}/posts'.format(company)
     driver.implicitly_wait(30)
     driver.get(fb_page_url)
-    #WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "email")))
     scroll(driver, 10) # scrolls the page 
-    #some nasty code here to scrape the posts from company page
+    #using beautiful soup here to scrape the posts from company page
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     soup_content = soup.text.strip()
-    feed_div = soup.find('div', {'class': '_1xnd'}) #class="occludable-update ember-view"
+    #find the parent post feed container
+    feed_div = soup.find('div', {'class': '_1xnd'}) 
     length = len(feed_div)
     print(length)
     count = 0
@@ -68,38 +67,44 @@ def facebook_scraper(company, driver):
     data_frame.append(['Date', 'Content', 'Images', 'Video', 'Likes', 'Comments', 'Shares'])
     if feed_div != -1 :
         for posts in feed_div:
+            #find the container contains all the posts already rendered on the page inside of the post feed container
             each_page = posts.find_all('div', {'class':'_4-u2 _4-u8'})
             if each_page != -1:
+                #narrow down to each post container that only contains one post
                 for post in each_page:
-                    print('this is {}'.format(count))
+                    #if the post container doesn't contain anything, moving on to the next post container
                     if not len(post):
                         continue
+                    #sometimes it could be an ad link randomly inserted between the posts by facebook, we are going to skip that too
                     if isinstance(post, element.NavigableString):
                         continue
+                    #find the date of the post by the class name and html tag
                     post_date = post.find('span',{'class': 'timestampContent'})
+                    #to ensure the span contains the date content, sometimes there could be nothing
                     if hasattr(post_date, 'text'):
                         post_date_text = post_date.text
                     else:
                         continue
                     print(post_date_text)
-                    #print(post_date_text)
+                    #find the post content inside of each individual post container 
                     post_content = post.find('div', {'class':'_5pbx userContent _3576'}) 
                     if post_content is not None:
-                    #if post_content != -1:
                         post_content_text = post_content.text
                         print(post_content_text)
                     else:
                         post_content_text = ''
                     print(post_content)
+                    #find the images content inside of each individual post container
                     post_images = post.find_all('div', {'class':'uiScaledImageContainer'})
                     image_array = []
-                    #print(post_images)
+                    #check if the post contains any images
                     if len(post_images) > 0:
                         for image in post_images:
+                            #find the source of all the images 
                             pic_src = image.find('img',{"src":True})
                             image_array.append(pic_src['src'])
                         print(image_array)
-                    #post_images_text = post_images.text.strip()
+                    #find if the post contains any videos
                     post_video = post.find('video',{"src":True})
                     print(post_video)
                     if post_video is not None:
@@ -107,19 +112,16 @@ def facebook_scraper(company, driver):
                         print(video)
                     else: 
                         video = post_video
-                    #post_video_text = post_video.text.strip()
+                    #get all the likes count of the post 
                     post_likes = post.find('span', {'class':'_3dlh _3dli'})
                     print(post_likes)
+                    #check if this post has any likes
                     if post_likes is not None:
                         post_likes_text = post_likes.text
                         print(post_likes_text)
                     else:
                         post_likes_text = '0'
-                    #if hasattr(post_likes, 'text'):
-                        #post_likes_text = post_likes.text
-                        #print(post_likes_text)
-                    #else:
-                        #post_likes_text = '\n'
+                    #get all the comments count of the post
                     post_comments = post.find('a', {'class':'_3hg- _42ft'})
                     print(post_comments)
                     if post_comments is not None:
@@ -127,11 +129,7 @@ def facebook_scraper(company, driver):
                         print(post_comments_text)
                     else:
                         post_comments_text = '0'
-                    #if hasattr(post_comments, 'text'):
-                        #post_comments_text = post_comments.text
-                        #print(post_comments_text)
-                    #else: 
-                        #post_comments_text = '\n'
+                    #find the shares count of the post
                     post_shares = post.find('a', {'class': '_3rwx _42ft'})
                     print(post_shares)
                     if post_shares is not None:
@@ -139,31 +137,25 @@ def facebook_scraper(company, driver):
                         print(post_shares_text)
                     else: 
                         post_shares_text = '0'
+                    #insert all the info of this specific post into the dataframe
                     row = [post_date_text, post_content_text, image_array, video, post_likes_text, post_comments_text.strip('\n'), post_shares_text.strip('\n')]
                     data_frame.append(row)
-                    #post_content = post.text.strip()#.find('div', {'class': 'feed-shared-text relative feed-shared-update-v2__commentary  ember-view'})
                     count = count + 1
-        #print(data_frame)
-        #filtering out duplicated rows
-        #df = np.array(data_frame)
-        #b = np.ascontiguousarray(df).view(np.dtype((np.void, df.dtype.itemsize * df.shape[1])))
-        #_, idx = np.unique(b, return_index=True)
-        #unique_df = df[idx]
+        #after we gathered all of the post info from the account, we insert the dataframe into a csv file
         with open('Facebook_{}.csv'.format(company), 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerows(data_frame)
-    #company_posts = [[post.post_date_text, post.post_content_text, post.post_images,post.post_video,post.post_likes_text,post.post_comments_text] for post in feed_div]
-
-def batchScrapping(Array):
+    
+def batchScraping(Array):
     options = Options()
     options.add_argument("--disable-notifications")
     options.add_argument("--disable-infobars")
     options.add_argument("--mute-audio")
     driver = webdriver.Chrome('/Users/zilanouyang/downloads/chromedriver',options=options)
-    # define linkedin username and password here
+    # specify your facebook log-in username and password here
     email = "login email"
     password = "login password"
-    #login 
+    #login process
     driver.get("https://www.facebook.com/")
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "email")))
     email_elem = driver.find_element_by_id("email")
@@ -171,21 +163,18 @@ def batchScrapping(Array):
     password_elem = driver.find_element_by_id("pass")
     password_elem.send_keys(password)
     driver.find_element_by_id("loginbutton").click()
-    #YOU HAVE TO FINISH CAPTCHA IN 60S, or you could extend it
+    #YOU HAVE TO FINISH CAPTCHA IN 120S, or you could extend it by changing the number
     WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.ID, "pinnedNav")))
     n = len(Array)
     for i in range(n): 
         print(Array[i])
         facebook_scraper(Array[i], driver)
-        
     driver.quit()
 
-
-#linked_scraper('shell')
 
 Array = [				
     'HondaCanada'	,	
     'officialsaicmotormg'	,		
     'ford'
 ]
-batchScrapping(Array)
+batchScraping(Array)
