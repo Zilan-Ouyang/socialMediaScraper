@@ -10,13 +10,13 @@ This project can be used for scraping:
 
 1. Scraping tweet contents, URL, Retweets count, Favourites count
 
-Use the script 'twitterScraping.py', you need have the list of twitter handles you want to scrape, then put the list into the array list on the file
+    Use the script 'twitterScraping.py', you need have the list of twitter handles you want to scrape, then put the list into the array list on the file
 
-Here's an example:
-```python
-#username array consists of a list of twitter handle names
-Array = ['Total', 'shell']
-```
+    Here's an example:
+    ```python
+    #username array consists of a list of twitter handle names
+    Array = ['Total', 'shell']
+    ```
 
 2. This script is using package 'GetOldTweets3', and since twitter has a limit on the requests, you might need to use vpn to change your IP address for every 6000 - 7000 tweets.
 
@@ -56,10 +56,10 @@ def batchScraping(Array):
             except ValueError:
                 continue
 ```
-You can modify the file path in this block of codes, as long as the file path passed into 'readingFile(fname, driver)' function is the correct one, it should do the work.
+    You can modify the file path in this block of codes, as long as the file path passed into 'readingFile(fname, driver)' function is the correct one, it should do the work.
 
 2. On the first step, you will also be required to have chrome driver installed on your computer, you can also use other browser driver here depending on your preference; the chrome driver can be downloaded from here: https://chromedriver.chromium.org/
-And you need to specify the location of the webdriver on your machine here:
+    And you need to specify the location of the webdriver on your machine here:
 
 ```python
 driver = webdriver.Chrome('/Users/zilanouyang/downloads/chromedriver',options=options)
@@ -71,7 +71,7 @@ python3 twitterScraperMedia.py
 ```
 
 4. Output:
-The output of this file will be inserted directly into your existed csv file.
+    The output of this file will be inserted directly into your existed csv file.
 
 ## Facebook
 
@@ -89,7 +89,7 @@ Array = [
 batchScraping(Array)
 ```
 2. Set up webdriver
-Make sure you disable the notifications and infobars, and specify your webdriver path on your machine
+    Make sure you disable the notifications and infobars, and specify your webdriver path on your machine
 ```python
     options = Options()
     options.add_argument("--disable-notifications")
@@ -113,7 +113,7 @@ Make sure you disable the notifications and infobars, and specify your webdriver
 ```
 
 4. After user logged in, the scraping process would start after webdriver spotted the side nav bar on the page; the webdriver would wait for 120 seconds maximum until the page fully loaded; if the side navbar didn't get loaded within 120s, it means either user's network is having issues or the user got blocked out by captcha, therefore, user has to complete the captcah challenge in order to let the script to have an access to facebook:
-User can modify the waiting time here:
+    User can modify the waiting time here:
 ```python
 WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.ID, "pinnedNav")))
 ```
@@ -151,7 +151,7 @@ python3 linkedinSelenium.py
 ```
 
 4. Output file
-the default out file name is 'Linkedin_{name from the array list}.csv'
+    the default out file name is 'Linkedin_{name from the array list}.csv'
 
 5. Extra step for modifying the date of each post entry in the output csv file
 After we get the output into the csv file, the date of each post would not be displayed as an actual date, instead, linkedin uses a relative date (e.g. 2 days ago).If you want to show the actual date of each post entry in your file, you can run another script in this repo called 'convertDateLinkedin.py' to convert the relative date to the actual date:
