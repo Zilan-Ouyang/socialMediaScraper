@@ -2,9 +2,9 @@
 
 This project can be used for scraping:
 
-⋅⋅* Twitter （tweets, tweet media, likes count, replies count, retweets count)
-⋅⋅* Linkedin company public page （posts, images, videos, likes count, comments count)
-⋅⋅* Facebook company public page (posts, images, videos, likes count, comments count, shares count)
+* Twitter （tweets, tweet media, likes count, replies count, retweets count)
+* Linkedin company public page （posts, images, videos, likes count, comments count)
+* Facebook company public page (posts, images, videos, likes count, comments count, shares count)
 
 ## Twitter Scrapper Usage
 
@@ -155,7 +155,7 @@ the default out file name is 'Linkedin_{name from the array list}.csv'
 
 5. Extra step for modifying the date of each post entry in the output csv file
 After we get the output into the csv file, the date of each post would not be displayed as an actual date, instead, linkedin uses a relative date (e.g. 2 days ago).If you want to show the actual date of each post entry in your file, you can run another script in this repo called 'convertDateLinkedin.py' to convert the relative date to the actual date:
-⋅⋅1. You can keep using the array list that you used in scraping process if you didn't modify the default file name
+* You can keep using the array list that you used in scraping process if you didn't modify the default file name
 ```python
 Array = [				
     'chongqing-changan'
@@ -165,12 +165,12 @@ The script would look for the file and modify the file directly, you can modify 
 ```python
 data = pd.read_csv('./Linkedin_Data/Linkedin_{}.csv'.format(Filename))
 ```
-⋅⋅2. Modify the date; for example, if you scraped the date on 4.30.2020, you can specify the current date as '2020-04-23' in the script.
+* Modify the date; for example, if you scraped the date on 4.30.2020, you can specify the current date as '2020-04-23' in the script.
 
 ```python
 currentDate = datetime.strptime("2020-04-23", "%Y-%m-%d")
 ```
-⋅⋅3. Running the script
+* Running the script
 
 ```python
 python3 convertDateLinkedin.py
