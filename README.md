@@ -161,7 +161,7 @@ Array = [
     'chongqing-changan'
 ]
 ```
-The script would look for the file and modify the file directly, you can modify your file path here:
+* The script would look for the file and modify the file directly, you can modify your file path here:
 ```python
 data = pd.read_csv('./Linkedin_Data/Linkedin_{}.csv'.format(Filename))
 ```
