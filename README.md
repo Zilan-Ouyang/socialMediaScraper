@@ -1,4 +1,4 @@
-# Social Media Scrappers 
+# Social Media Scrapers 
 
 This project can be used for scraping:
 
@@ -6,7 +6,7 @@ This project can be used for scraping:
 * Linkedin company public page （posts, images, videos, likes count, comments count)
 * Facebook company public page (posts, images, videos, likes count, comments count, shares count)
 
-## Twitter Scrapper Usage
+## Twitter Scraper Usage
 
 1. Scraping tweet contents, URL, Retweets count, Favourites count
 
