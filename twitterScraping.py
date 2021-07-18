@@ -1,18 +1,23 @@
 import GetOldTweets3 as got
+
 import pandas as pd
 
+import snscrape.modules.twitter as sntwitter
+
+
 def username_tweets_to_csv(username, count):
-    # Creation of query object
-    tweetCriteria = got.manager.TweetCriteria().setUsername(username)\
-                                            .setSince('2012-01-01')
-    # Creation of list that contains all tweets
-    tweets = got.manager.TweetManager.getTweets(tweetCriteria)
-    # Creating list of chosen tweet data
-    user_tweets = [[tweet.date, tweet.text, tweet.permalink,tweet.retweets,tweet.favorites] for tweet in tweets]
-    # Creation of dataframe from tweets list
-    tweets_df = pd.DataFrame(user_tweets, columns = ['Datetime', 'Text', 'URL', 'Retweets', 'Favorites'])
-    # Converting dataframe to CSV
-    tweets_df.to_csv('{}-all-tweets.csv'.format(username), sep=',')
+    # Creating list to append tweet data to
+    tweets_list = []
+    # ['Datetime', 'Text', 'UserName', 'URL', 'Retweets', 'Favorites', 'Quotes', 'Replies']
+    # Using TwitterSearchScraper to scrape data and append tweets to list
+    for i,tweet in enumerate(sntwitter.TwitterSearchScraper('%s since:2005-01-01'%(username)).get_items()):
+        print(i)
+        print(tweet.id)
+        tweets_list.append([tweet.date, tweet.content, tweet.user.username, tweet.url, tweet.retweetCount, tweet.likeCount, tweet.quoteCount, tweet.replyCount ])
+        
+    # Creating a dataframe from the tweets list above
+    tweets_df2 = pd.DataFrame(tweets_list, columns=['Datetime', 'Text', 'UserName', 'URL', 'Retweets', 'Favorites', 'Quotes', 'Replies'])
+    tweets_df2.to_csv('{}-2009-tweets.csv'.format(username), sep=',')
 
 def batchScrapping(Array): 
     n = len(Array)
@@ -22,7 +27,7 @@ def batchScrapping(Array):
         username_tweets_to_csv(Array[i], count)
 
 #username array consists of a list of twitter handle names
-Array = ['Total', 'shell']
+Array = ['#greenwash']
 # Calling function to scrape all the pages specified in the array list
 batchScrapping(Array)
 		
